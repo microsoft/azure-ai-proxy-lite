@@ -64,7 +64,15 @@ The recommended way to deploy this app is with Dev Containers. Install the [VS C
     az account set --subscription "$AZURE_SUBSCRIPTION_ID"
     ```
 
-7. Provision and deploy the proxy solution:
+7. Set the encryption key for this `azd` environment. The proxy uses this key to encrypt sensitive resource configuration, including backend endpoint URLs and API keys stored by the admin app:
+
+    ```shell
+    azd env set ENCRYPTION_KEY "$(openssl rand -hex 32)"
+    ```
+
+    Do not change `ENCRYPTION_KEY` after resources have been added in the admin UI. Existing encrypted catalog entries were encrypted with the previous key and may become unreadable if the key changes.
+
+8. Provision and deploy the proxy solution:
 
     ```shell
     azd up
@@ -92,7 +100,7 @@ The recommended way to deploy this app is with Dev Containers. Install the [VS C
 
     ![Azure resources](../media/azure_resources.png)
 
-8. When `azd` has finished deploying you'll see the endpoints and Entra app registration details in the terminal.
+9. When `azd` has finished deploying you'll see the endpoints and Entra app registration details in the terminal.
 
 ## Authenticating with the AI Proxy Admin
 
