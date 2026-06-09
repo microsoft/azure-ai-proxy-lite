@@ -59,7 +59,7 @@ export const Header = () => {
     <div className={styles.container}>
       <div className={styles.left}>
         <Link
-          href="https://gloveboxes.github.io/azure-ai-proxy-lite/"
+          href="https://microsoft.github.io/azure-ai-proxy-lite/"
           title="GitHub repo"
           target="_blank"
         >

@@ -1,6 +1,6 @@
 """ Test Azure OpenAI Embeddings API """
 
-# See documentation at https://gloveboxes.github.io/azure-openai-service-proxy/category/developer-endpoints/
+# See documentation at https://microsoft.github.io/azure-openai-service-proxy/category/developer-endpoints/
 
 import os
 

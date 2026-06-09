@@ -60,7 +60,7 @@ For LAN or offline deployments (e.g., workshops without Azure), you can run the 
 
 Sign in to the admin UI with the `ADMIN_USERNAME` and `ADMIN_PASSWORD` from your `.env` file (default username is `admin`).
 
-For the full local deployment reference (managing the stack, building custom images, multi-architecture builds), see the [Docker deployment guide](https://github.com/gloveboxes/azure-ai-proxy-lite/blob/main/docker/README.md){:target="_blank"}.
+For the full local deployment reference (managing the stack, building custom images, multi-architecture builds), see the [Docker deployment guide](https://github.com/microsoft/azure-ai-proxy-lite/blob/main/docker/README.md){:target="_blank"}.
 
 ## Managing the stack
 

@@ -42,7 +42,7 @@ The recommended way to deploy this app is with Dev Containers. Install the [VS C
 2. Clone the repo:
 
     ```shell
-    git clone https://github.com/gloveboxes/azure-ai-proxy-lite.git
+    git clone https://github.com/microsoft/azure-ai-proxy-lite.git
     ```
 
 3. Open the repo in VS Code.
@@ -145,4 +145,4 @@ azd up
 
 ## Troubleshooting
 
-If you encounter any issues deploying the solution, please raise an issue on the [GitHub repo](https://github.com/gloveboxes/azure-ai-proxy-lite/issues)
+If you encounter any issues deploying the solution, please raise an issue on the [GitHub repo](https://github.com/microsoft/azure-ai-proxy-lite/issues)

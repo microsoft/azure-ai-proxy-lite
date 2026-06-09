@@ -2,7 +2,7 @@
 
 A managed, multi-tenant proxy that sits between workshop attendees and Azure AI services, giving organisers full control over access, capacity, and usage tracking. Run multiple workshops simultaneously with full data isolation between events.
 
-The solution documentation is published [here](https://gloveboxes.github.io/azure-ai-proxy-lite/).
+The solution documentation is published [here](https://microsoft.github.io/azure-ai-proxy-lite/).
 
 ![](docs/static/img/openai_proxy_banner.jpeg)
 

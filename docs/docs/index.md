@@ -100,6 +100,6 @@ Watch this 5-minute video to learn how to get started with the Azure AI Proxy.
 
 ## Open Source
 
-The Azure AI Proxy is an open-source project, licensed under MIT. You can find the source code on [GitHub](https://github.com/gloveboxes/azure-ai-proxy-lite){:target="_blank"}.
+The Azure AI Proxy is an open-source project, licensed under MIT. You can find the source code on [GitHub](https://github.com/microsoft/azure-ai-proxy-lite){:target="_blank"}.
 
 This project would not be possible without contributions from multiple people. Please feel free to contribute to the project by submitting a pull request or opening an issue.

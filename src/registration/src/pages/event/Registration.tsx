@@ -664,7 +664,7 @@ print(completion.model_dump_json(indent=2))`}
             </li>
             <li>
               <Link
-                href="https://github.com/gloveboxes/azure-ai-proxy-lite/tree/main/examples"
+                href="https://github.com/microsoft/azure-ai-proxy-lite/tree/main/examples"
                 target="_blank"
                 rel="noopener noreferrer"
               >

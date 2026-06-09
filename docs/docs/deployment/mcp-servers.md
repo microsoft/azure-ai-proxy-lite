@@ -277,7 +277,7 @@ curl -X POST "https://<proxy-host>/api/v1/mcp/mcp-demo/mcp" \
 
 ## Example Project
 
-A complete working example is in [`examples/python/openai_sdk_1.x/mcp/`](https://github.com/gloveboxes/azure-ai-proxy-lite/tree/main/examples/python/openai_sdk_1.x/mcp){:target="_blank"}:
+A complete working example is in [`examples/python/openai_sdk_1.x/mcp/`](https://github.com/microsoft/azure-ai-proxy-lite/tree/main/examples/python/openai_sdk_1.x/mcp){:target="_blank"}:
 
 ```
 mcp/
