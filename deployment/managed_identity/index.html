@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<link href="../ai-search/" rel="prev"/>
+<link href="../lan/" rel="next"/>
+<link href="../../media/favicon.png" rel="icon"/>
+<meta content="mkdocs-1.6.1, mkdocs-material-9.7.6" name="generator"/>
+<title>Managed Identity - Azure AI Proxy</title>
+<link href="../../assets/stylesheets/main.484c7ddc.min.css" rel="stylesheet"/>
+<link href="../../assets/stylesheets/palette.ab4e12ef.min.css" rel="stylesheet"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
+<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+<link href="../../css/custom.css" rel="stylesheet"/>
+<script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+<link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><script src="../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+<body data-md-color-accent="pink" data-md-color-primary="black" data-md-color-scheme="default" dir="ltr">
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header md-header--shadow" data-md-component="header">
+<nav aria-label="Header" class="md-header__inner md-grid">
+<a aria-label="Azure AI Proxy" class="md-header__button md-logo" data-md-component="logo" href="../.." title="Azure AI Proxy">
+<img alt="logo" src="../../media/favicon.png"/>
+</a>
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+</label>
+<div class="md-header__title" data-md-component="header-title">
+<div class="md-header__ellipsis">
+<div class="md-header__topic">
+<span class="md-ellipsis">
+            Azure AI Proxy
+          </span>
+</div>
+<div class="md-header__topic" data-md-component="header-topic">
+<span class="md-ellipsis">
+            
+              Managed Identity
+            
+          </span>
+</div>
+</div>
+</div>
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="pink" data-md-color-media="" data-md-color-primary="black" data-md-color-scheme="default" id="__palette_0" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to dark mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 2c-1.82 0-3.53.5-5 1.35C8 5.08 10 8.3 10 12s-2 6.92-5 8.65C6.47 21.5 8.18 22 10 22a10 10 0 0 0 10-10A10 10 0 0 0 10 2"></path></svg>
+</label>
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="cyan" data-md-color-media="" data-md-color-primary="amber" data-md-color-scheme="slate" id="__palette_1" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_0" hidden="" title="Switch to light mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+</label>
+</form>
+<script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="Azure AI Proxy" class="md-nav__button md-logo" data-md-component="logo" href="../.." title="Azure AI Proxy">
+<img alt="logo" src="../../media/favicon.png"/>
+</a>
+    Azure AI Proxy
+  </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../..">
+<span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+<span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="true" aria-labelledby="__nav_2_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_2">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Deployment
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../azure/">
+<span class="md-ellipsis">
+    
+  
+    Deploy to Azure
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../mcp-servers/">
+<span class="md-ellipsis">
+    
+  
+    MCP Servers
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../ai-search/">
+<span class="md-ellipsis">
+    
+  
+    Azure AI Search
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<a class="md-nav__link md-nav__link--active" href="./">
+<span class="md-ellipsis">
+    
+  
+    Managed Identity
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../lan/">
+<span class="md-ellipsis">
+    
+  
+    Docker Deployment
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../resources/">
+<span class="md-ellipsis">
+    
+  
+    Resources
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../events/">
+<span class="md-ellipsis">
+    
+  
+    Events
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../attendee/">
+<span class="md-ellipsis">
+    
+  
+    Attendees
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../reporting/">
+<span class="md-ellipsis">
+    
+  
+    Reporting
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../capacity/">
+<span class="md-ellipsis">
+    
+  
+    Capacity
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../foundry_toolkit/">
+<span class="md-ellipsis">
+    
+  
+    Foundry Toolkit
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../developers/">
+<span class="md-ellipsis">
+    
+  
+    Developers
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../security_architecture/">
+<span class="md-ellipsis">
+    
+  
+    Security Architecture
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../workshops/">
+<span class="md-ellipsis">
+    
+  
+    Workshops
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../faq/">
+<span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<h1 id="managed-identity-support-for-azure-ai-proxy">Managed Identity Support for Azure AI Proxy<a class="headerlink" href="#managed-identity-support-for-azure-ai-proxy" title="Permanent link">¶</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">¶</a></h2>
+<p>This proxy supports <strong>Azure Managed Identity</strong> authentication to access Azure OpenAI Service and Azure AI Foundry Agent Service resources. This eliminates the need to store API keys — the proxy authenticates using its user-assigned managed identity and Azure RBAC.</p>
+<h2 id="required-rbac-permissions">Required RBAC Permissions<a class="headerlink" href="#required-rbac-permissions" title="Permanent link">¶</a></h2>
+<p>The proxy's <strong>user-assigned managed identity</strong> needs different roles depending on which services it proxies to.</p>
+<h3 id="azure-openai-service">Azure OpenAI Service<a class="headerlink" href="#azure-openai-service" title="Permanent link">¶</a></h3>
+<p>For proxying standard OpenAI endpoints (chat completions, embeddings):</p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Role ID</th>
+<th>Scope</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Cognitive Services OpenAI User</strong></td>
+<td><code>5e0bd9bd-7b93-4f28-af87-19fc36ad61bd</code></td>
+<td>Azure OpenAI account</td>
+<td>Read/write access to OpenAI deployments (chat, embeddings)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Token scope</strong>: <code>https://cognitiveservices.azure.com/.default</code></p>
+<p><strong>Scope format</strong>:
+</p><div class="highlight"><pre><span></span><code>/subscriptions/&lt;sub-id&gt;/resourceGroups/&lt;rg&gt;/providers/Microsoft.CognitiveServices/accounts/&lt;openai-account&gt;
+</code></pre></div><p></p>
+<h3 id="azure-ai-foundry-agent-service">Azure AI Foundry Agent Service<a class="headerlink" href="#azure-ai-foundry-agent-service" title="Permanent link">¶</a></h3>
+<p>For proxying Foundry agent endpoints (agent CRUD, conversations, responses):</p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Role ID</th>
+<th>Scope</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Cognitive Services OpenAI User</strong></td>
+<td><code>5e0bd9bd-7b93-4f28-af87-19fc36ad61bd</code></td>
+<td>AI Services hub account</td>
+<td>Access to underlying OpenAI models used by agents</td>
+</tr>
+<tr>
+<td><strong>Azure AI User</strong></td>
+<td><code>53ca6127-db72-4e31-b599-04dc5da150b4</code></td>
+<td>AI Foundry project</td>
+<td>Full data-plane access for agent operations (create, run, delete agents, conversations, responses)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Token scope</strong>: <code>https://ai.azure.com/.default</code></p>
+<blockquote>
+<p><strong>Note</strong>: The "Azure AI Developer" role is <strong>not sufficient</strong> for agent operations — it lacks the <code>Microsoft.CognitiveServices/accounts/AIServices/agents/write</code> data action. The "Azure AI User" role has wildcard <code>Microsoft.CognitiveServices/*</code> data actions that cover all agent operations.</p>
+</blockquote>
+<p><strong>Scope formats</strong>:
+</p><div class="highlight"><pre><span></span><code># Hub (for Cognitive Services OpenAI User)
+/subscriptions/&lt;sub-id&gt;/resourceGroups/&lt;rg&gt;/providers/Microsoft.CognitiveServices/accounts/&lt;hub-name&gt;
+
+# Project (for Azure AI User)
+/subscriptions/&lt;sub-id&gt;/resourceGroups/&lt;rg&gt;/providers/Microsoft.CognitiveServices/accounts/&lt;hub-name&gt;/projects/&lt;project-name&gt;
+</code></pre></div><p></p>
+<h3 id="foundry-endpoint-url-format">Foundry Endpoint URL Format<a class="headerlink" href="#foundry-endpoint-url-format" title="Permanent link">¶</a></h3>
+<p>When adding a Foundry Agent model to the catalog, the endpoint URL must use the AI Services domain (not the Cognitive Services domain):</p>
+<div class="highlight"><pre><span></span><code># Correct
+https://&lt;account&gt;.services.ai.azure.com/api/projects/&lt;project-name&gt;
+
+# Wrong — will result in 404s
+https://&lt;account&gt;.cognitiveservices.azure.com/...
+</code></pre></div>
+<h3 id="summary-of-all-roles">Summary of All Roles<a class="headerlink" href="#summary-of-all-roles" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Role</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OpenAI (chat, embeddings)</td>
+<td>Cognitive Services OpenAI User</td>
+<td>OpenAI account</td>
+</tr>
+<tr>
+<td>Foundry Agents (model access)</td>
+<td>Cognitive Services OpenAI User</td>
+<td>AI Services hub</td>
+</tr>
+<tr>
+<td>Foundry Agents (agent operations)</td>
+<td>Azure AI User</td>
+<td>AI Foundry project</td>
+</tr>
+</tbody>
+</table>
+<h2 id="automated-setup">Automated Setup<a class="headerlink" href="#automated-setup" title="Permanent link">¶</a></h2>
+<p>A script is provided to automate RBAC role assignment. You can download the helper script <a href="https://raw.githubusercontent.com/microsoft/azure-ai-proxy-lite/refs/heads/main/scripts/setup-managed-identity-rbac.sh" target="_blank">setup-managed-identity-rbac.sh</a>.</p>
+<h2 id="authentication-flow">Authentication Flow<a class="headerlink" href="#authentication-flow" title="Permanent link">¶</a></h2>
+<div class="mermaid">flowchart LR
+A[Request]
+B[Catalog Lookup]
+C{Use MI?}
+D[Foundry Agent?]
+E[Token: ai.azure.com]
+F[Token: cogs]
+G[Header: Bearer]
+H[Header: api-key]
+I[Forward]
+
+A --&gt; B --&gt; C
+C -- Yes --&gt; D
+D -- Yes --&gt; E --&gt; G --&gt; I
+D -- No --&gt; F --&gt; G --&gt; I
+C -- No --&gt; H --&gt; I
+</div>
+<h3 id="defaultazurecredential-chain">DefaultAzureCredential Chain<a class="headerlink" href="#defaultazurecredential-chain" title="Permanent link">¶</a></h3>
+<p>The proxy uses <code>DefaultAzureCredential</code> which tries authentication methods in order:</p>
+<ol>
+<li>Environment variables</li>
+<li>Managed Identity (in Azure — this is the primary path in production)</li>
+<li>Visual Studio credentials</li>
+<li>Azure CLI credentials (useful for local development)</li>
+<li>Azure PowerShell credentials</li>
+</ol>
+<h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">¶</a></h2>
+<h3 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">¶</a></h3>
+<ol>
+<li>
+<p><strong>Deploy the proxy</strong>
+</p><div class="highlight"><pre><span></span><code>azd<span class="w"> </span>up
+</code></pre></div><p></p>
+</li>
+<li>
+<p><strong>Run the RBAC setup script</strong>
+</p><div class="highlight"><pre><span></span><code>./scripts/setup-managed-identity-rbac.sh
+</code></pre></div><p></p>
+</li>
+<li>
+<p><strong>Add models in the Admin UI</strong> with "Use Managed Identity" enabled</p>
+</li>
+<li>
+<p><strong>Use the proxy</strong> — no API keys needed</p>
+</li>
+</ol>
+<h3 id="adding-models-via-admin-ui">Adding Models via Admin UI<a class="headerlink" href="#adding-models-via-admin-ui" title="Permanent link">¶</a></h3>
+<ol>
+<li>Navigate to <strong>Resources</strong> → <strong>+ New Resource</strong></li>
+<li>Fill in:</li>
+<li><strong>Friendly Name</strong>: e.g., "Production GPT-4o"</li>
+<li><strong>Deployment Name</strong>: Your deployment name</li>
+<li><strong>Type</strong>: Select model type (e.g., <code>Foundry_Model</code>, <code>Foundry_Agent</code>)</li>
+<li><strong>Endpoint</strong>: Your endpoint URL</li>
+<li><strong>Key</strong>: Leave blank (not used with managed identity)</li>
+<li><strong>Region</strong>: Azure region</li>
+<li><strong>Use Managed Identity</strong>: ✓ Check this box</li>
+<li><strong>Active</strong>: ✓ Check to enable</li>
+<li>Save</li>
+</ol>
+<h3 id="for-developers-testing-locally">For Developers — Testing Locally<a class="headerlink" href="#for-developers-testing-locally" title="Permanent link">¶</a></h3>
+<p>The proxy uses <code>DefaultAzureCredential</code> which falls back to:</p>
+<ul>
+<li><strong>Azure CLI credentials</strong>: Run <code>az login</code> first</li>
+<li><strong>Environment variables</strong>: Set <code>AZURE_CLIENT_ID</code>, <code>AZURE_TENANT_ID</code>, <code>AZURE_CLIENT_SECRET</code></li>
+</ul>
+<h2 id="backward-compatibility">Backward Compatibility<a class="headerlink" href="#backward-compatibility" title="Permanent link">¶</a></h2>
+<ul>
+<li>Existing API key-based models continue to work unchanged</li>
+<li><code>UseManagedIdentity</code> defaults to <code>false</code></li>
+<li>No breaking changes to existing deployments</li>
+<li>UI supports both authentication methods per model</li>
+</ul>
+</article>
+</div>
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+</div>
+</main>
+<footer class="md-footer">
+<nav aria-label="Footer" class="md-footer__inner md-grid">
+<a aria-label="Previous: Azure AI Search" class="md-footer__link md-footer__link--prev" href="../ai-search/">
+<div class="md-footer__button md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+</div>
+<div class="md-footer__title">
+<span class="md-footer__direction">
+                Previous
+              </span>
+<div class="md-ellipsis">
+                Azure AI Search
+              </div>
+</div>
+</a>
+<a aria-label="Next: Docker Deployment" class="md-footer__link md-footer__link--next" href="../lan/">
+<div class="md-footer__title">
+<span class="md-footer__direction">
+                Next
+              </span>
+<div class="md-ellipsis">
+                Docker Deployment
+              </div>
+</div>
+<div class="md-footer__button md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"></path></svg>
+</div>
+</a>
+</nav>
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+      Material for MkDocs
+    </a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.footer", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+<script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script><script type="module">import mermaid from "https://unpkg.com/mermaid@11.4.1/dist/mermaid.esm.min.mjs";
+mermaid.initialize({
+    theme: "base",
+    flowchart: {
+        wrappingWidth: 120
+    },
+    themeVariables: {
+        primaryColor: "#e7f1fa",
+        primaryBorderColor: "#2b6cb0",
+        primaryTextColor: "#1a202c",
+        lineColor: "#2b6cb0",
+        secondaryColor: "#f7fafc",
+        tertiaryColor: "#edf2f7",
+        clusterBorder: "#2b6cb0",
+        clusterBkg: "#f7fafc"
+    }
+});</script></body></html>

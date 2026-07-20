@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<link href="../developers/" rel="prev"/>
+<link href="../workshops/" rel="next"/>
+<link href="../media/favicon.png" rel="icon"/>
+<meta content="mkdocs-1.6.1, mkdocs-material-9.7.6" name="generator"/>
+<title>Security Architecture - Azure AI Proxy</title>
+<link href="../assets/stylesheets/main.484c7ddc.min.css" rel="stylesheet"/>
+<link href="../assets/stylesheets/palette.ab4e12ef.min.css" rel="stylesheet"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
+<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+<link href="../css/custom.css" rel="stylesheet"/>
+<script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+<link href="../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><script src="../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+<body data-md-color-accent="pink" data-md-color-primary="black" data-md-color-scheme="default" dir="ltr">
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header md-header--shadow" data-md-component="header">
+<nav aria-label="Header" class="md-header__inner md-grid">
+<a aria-label="Azure AI Proxy" class="md-header__button md-logo" data-md-component="logo" href=".." title="Azure AI Proxy">
+<img alt="logo" src="../media/favicon.png"/>
+</a>
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+</label>
+<div class="md-header__title" data-md-component="header-title">
+<div class="md-header__ellipsis">
+<div class="md-header__topic">
+<span class="md-ellipsis">
+            Azure AI Proxy
+          </span>
+</div>
+<div class="md-header__topic" data-md-component="header-topic">
+<span class="md-ellipsis">
+            
+              Security Architecture
+            
+          </span>
+</div>
+</div>
+</div>
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="pink" data-md-color-media="" data-md-color-primary="black" data-md-color-scheme="default" id="__palette_0" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to dark mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 2c-1.82 0-3.53.5-5 1.35C8 5.08 10 8.3 10 12s-2 6.92-5 8.65C6.47 21.5 8.18 22 10 22a10 10 0 0 0 10-10A10 10 0 0 0 10 2"></path></svg>
+</label>
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="cyan" data-md-color-media="" data-md-color-primary="amber" data-md-color-scheme="slate" id="__palette_1" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_0" hidden="" title="Switch to light mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+</label>
+</form>
+<script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="Azure AI Proxy" class="md-nav__button md-logo" data-md-component="logo" href=".." title="Azure AI Proxy">
+<img alt="logo" src="../media/favicon.png"/>
+</a>
+    Azure AI Proxy
+  </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="..">
+<span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+<span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_2_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_2">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Deployment
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../deployment/azure/">
+<span class="md-ellipsis">
+    
+  
+    Deploy to Azure
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../deployment/mcp-servers/">
+<span class="md-ellipsis">
+    
+  
+    MCP Servers
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../deployment/ai-search/">
+<span class="md-ellipsis">
+    
+  
+    Azure AI Search
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../deployment/managed_identity/">
+<span class="md-ellipsis">
+    
+  
+    Managed Identity
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../deployment/lan/">
+<span class="md-ellipsis">
+    
+  
+    Docker Deployment
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../resources/">
+<span class="md-ellipsis">
+    
+  
+    Resources
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../events/">
+<span class="md-ellipsis">
+    
+  
+    Events
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../attendee/">
+<span class="md-ellipsis">
+    
+  
+    Attendees
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../reporting/">
+<span class="md-ellipsis">
+    
+  
+    Reporting
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../capacity/">
+<span class="md-ellipsis">
+    
+  
+    Capacity
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../foundry_toolkit/">
+<span class="md-ellipsis">
+    
+  
+    Foundry Toolkit
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../developers/">
+<span class="md-ellipsis">
+    
+  
+    Developers
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<a class="md-nav__link md-nav__link--active" href="./">
+<span class="md-ellipsis">
+    
+  
+    Security Architecture
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../workshops/">
+<span class="md-ellipsis">
+    
+  
+    Workshops
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../faq/">
+<span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<h1 id="security-architecture">Security Architecture<a class="headerlink" href="#security-architecture" title="Permanent link">¶</a></h1>
+<p>This page documents the security architecture of the Azure AI Proxy when deployed to Azure, following least-privilege principles. The deployment is designed for <strong>B2B/enterprise (BAMI) tenants</strong> where Entra ID governs identity and access.</p>
+<h2 id="architecture-overview">Architecture overview<a class="headerlink" href="#architecture-overview" title="Permanent link">¶</a></h2>
+<div class="mermaid">graph LR
+    subgraph Users[" "]
+        admin_user["👤 Admin"]
+        attendee["👤 Attendee"]
+        foundry_toolkit["🧰 Foundry Toolkit Client"]
+        sdk["🖥️ SDK Client"]
+        rest["🌐 REST Client"]
+        mcp_client["🔌 MCP Client"]
+    end
+
+    admin_user --&gt;|"Entra ID"| admin
+    foundry_toolkit --&gt;|"api-key (TLS)"| proxy
+    sdk --&gt;|"api-key (TLS)"| proxy
+    rest --&gt;|"api-key (TLS)"| proxy
+    mcp_client --&gt;|"api-key (TLS)"| proxy
+    attendee --&gt;|"GitHub OAuth"| reg
+
+    subgraph Azure["Azure — Entra ID Tenant"]
+        admin["Admin UI"]
+        proxy["API Proxy"]
+        reg["Registration<br/>(Static Web App)"]
+        storage[("Table Storage<br/>Shared Key: Off")]
+        ai["AI Foundry Models"]
+        mcp["MCP Server (optional)"]
+        ais["AI Search (optional)"]
+    end
+
+    reg --&gt;|"Linked Backend"| proxy
+    proxy --&gt;|"Managed Identity"| storage
+    proxy --&gt;|"Managed Identity"| ai
+    proxy --&gt;|"Managed Idendity<br/>or API Key"| mcp
+    proxy --&gt;|"Managed Idendity<br/>or API Key"| ais
+    admin --&gt;|"Managed Identity"| storage
+    admin -.-&gt;|"Cache Invalidation<br/>(internal)"| proxy
+
+    style Users fill:none,stroke:none
+</div>
+<h2 id="identity-model">Identity model<a class="headerlink" href="#identity-model" title="Permanent link">¶</a></h2>
+<p>All runtime service-to-service communication uses <strong>User-Assigned Managed Identities</strong> scoped via <code>AZURE_CLIENT_ID</code>. No shared keys, connection strings, or API keys flow between Azure services.</p>
+<div class="mermaid">graph LR
+    subgraph Identities["User-Assigned Managed Identities"]
+        proxyId["Proxy Identity<br/>(id-proxy)"]
+        adminId["Admin Identity<br/>(id-admin)"]
+    end
+
+    subgraph Roles["RBAC Role Assignments"]
+        r1["Storage Table Data<br/>Contributor"]
+        r2["Cognitive Services<br/>OpenAI User"]
+        r3["Storage Table Data<br/>Contributor"]
+    end
+
+    subgraph Resources["Target Resources"]
+        st[("Table Storage")]
+        ai["AI Services"]
+    end
+
+    proxyId --&gt;|"Scoped to<br/>storage account"| r1
+    proxyId --&gt;|"Scoped to<br/>AI Services"| r2
+    adminId --&gt;|"Scoped to<br/>storage account"| r3
+
+    r1 --&gt; st
+    r2 --&gt; ai
+    r3 --&gt; st
+</div>
+<table>
+<thead>
+<tr>
+<th>Identity</th>
+<th>RBAC Role</th>
+<th>Scope</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Proxy</strong> (User-Assigned)</td>
+<td>Storage Table Data Contributor</td>
+<td>Storage account</td>
+<td>Read/write attendees, events, metrics, rate limits</td>
+</tr>
+<tr>
+<td><strong>Proxy</strong> (User-Assigned)</td>
+<td>Cognitive Services OpenAI User</td>
+<td>AI Services account</td>
+<td>Forward requests to OpenAI models via managed identity</td>
+</tr>
+<tr>
+<td><strong>Admin</strong> (User-Assigned)</td>
+<td>Storage Table Data Contributor</td>
+<td>Storage account</td>
+<td>Manage events, resources, attendees, reporting</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Least-privilege design</p>
+<p>The system-assigned identities on the Container Apps have <strong>no role grants</strong> — only the user-assigned identities carry RBAC permissions. <code>AZURE_CLIENT_ID</code> is set explicitly so <code>DefaultAzureCredential</code> selects the correct identity at runtime.</p>
+</div>
+<h2 id="authentication-flows">Authentication flows<a class="headerlink" href="#authentication-flows" title="Permanent link">¶</a></h2>
+<h3 id="attendee-registration-github-oauth">Attendee registration (GitHub OAuth)<a class="headerlink" href="#attendee-registration-github-oauth" title="Permanent link">¶</a></h3>
+<div class="mermaid">sequenceDiagram
+    participant A as Attendee Browser
+    participant S as Static Web App
+    participant E as Easy Auth Sidecar
+    participant P as Proxy API
+    participant T as Table Storage
+
+    A-&gt;&gt;S: Navigate to /event/{id}
+    S-&gt;&gt;E: /.auth/login/github
+    E-&gt;&gt;A: GitHub OAuth redirect
+    A-&gt;&gt;E: OAuth callback
+    E-&gt;&gt;P: POST /attendee/event/{id}/register<br/>x-ms-client-principal: {userId}
+    P-&gt;&gt;T: Create attendee + lookup rows
+    T--&gt;&gt;P: API key (GUID)
+    P--&gt;&gt;A: 201 Created {api_key}
+</div>
+<h3 id="api-request-sdk-client">API request (SDK client)<a class="headerlink" href="#api-request-sdk-client" title="Permanent link">¶</a></h3>
+<div class="mermaid">sequenceDiagram
+    participant C as SDK Client
+    participant P as Proxy API
+    participant R as Rate Limiter
+    participant T as Table Storage
+    participant AI as Azure AI Services
+
+    C-&gt;&gt;P: POST /api/v1/openai/.../completions<br/>api-key: {key}
+    P-&gt;&gt;P: Validate key format<br/>(length, chars, control chars)
+    P-&gt;&gt;T: Lookup attendee by API key
+    T--&gt;&gt;P: Event + attendee context
+    P-&gt;&gt;R: Check daily request count
+    R--&gt;&gt;P: count &lt; cap ✓
+    P-&gt;&gt;P: Enforce max_tokens cap
+    P-&gt;&gt;AI: Forward request<br/>(Managed Identity token)
+    AI--&gt;&gt;P: Completion response
+    P--&gt;&gt;C: 200 OK + response
+    P-&gt;&gt;P: Async: log metrics
+</div>
+<h3 id="admin-authentication-entra-id">Admin authentication (Entra ID)<a class="headerlink" href="#admin-authentication-entra-id" title="Permanent link">¶</a></h3>
+<div class="mermaid">sequenceDiagram
+    participant A as Admin User
+    participant E as Easy Auth (Entra ID)
+    participant Ad as Admin Container App
+    participant T as Table Storage
+
+    A-&gt;&gt;E: Navigate to admin URL
+    E-&gt;&gt;A: Entra ID login redirect
+    A-&gt;&gt;E: Authenticate with org credentials
+    E-&gt;&gt;Ad: Authenticated request<br/>(x-ms-client-principal)
+    Ad-&gt;&gt;Ad: Verify user is registered owner
+    Ad-&gt;&gt;T: Manage events/resources<br/>(Managed Identity)
+    T--&gt;&gt;Ad: Data
+    Ad--&gt;&gt;A: Admin UI
+</div>
+<h2 id="network-and-data-security">Network and data security<a class="headerlink" href="#network-and-data-security" title="Permanent link">¶</a></h2>
+<h3 id="storage-account-hardening">Storage account hardening<a class="headerlink" href="#storage-account-hardening" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>allowSharedKeyAccess</code></td>
+<td><code>false</code></td>
+<td>Forces Entra ID authentication only — no connection strings</td>
+</tr>
+<tr>
+<td><code>defaultToOAuthAuthentication</code></td>
+<td><code>true</code></td>
+<td>Portal defaults to Entra ID instead of key-based auth</td>
+</tr>
+<tr>
+<td><code>publicNetworkAccess</code></td>
+<td><code>Enabled</code></td>
+<td>Allows Container Apps to reach storage over public endpoint (no private endpoints configured)</td>
+</tr>
+<tr>
+<td><code>networkAcls.defaultAction</code></td>
+<td><code>Allow</code></td>
+<td>Permits network access; access control enforced via Entra ID RBAC (shared key access is disabled)</td>
+</tr>
+<tr>
+<td><code>networkAcls.bypass</code></td>
+<td><code>AzureServices</code></td>
+<td>Allow trusted Azure services</td>
+</tr>
+<tr>
+<td><code>minimumTlsVersion</code></td>
+<td><code>TLS1_2</code></td>
+<td>Enforce modern TLS</td>
+</tr>
+</tbody>
+</table>
+<h3 id="container-apps-security">Container Apps security<a class="headerlink" href="#container-apps-security" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Auth sidecar</strong></td>
+<td>Container Apps Easy Auth injects <code>x-ms-client-principal</code> headers after authentication. The proxy trusts these headers only when running behind the sidecar.</td>
+</tr>
+<tr>
+<td><strong>Internal communication</strong></td>
+<td>Admin-to-proxy cache invalidation uses the Container Apps internal FQDN (<code>*.internal.{domain}</code>), not exposed to the internet.</td>
+</tr>
+<tr>
+<td><strong>Secret management</strong></td>
+<td>Encryption keys and App Insights connection strings are stored as Container Apps secrets, injected as environment variables.</td>
+</tr>
+<tr>
+<td><strong>Constant-time comparisons</strong></td>
+<td>Cache invalidation key and admin local login use <code>CryptographicOperations.FixedTimeEquals</code> to prevent timing attacks.</td>
+</tr>
+<tr>
+<td><strong>Image pull</strong></td>
+<td>Container Registry images pulled via managed identity (ACR pull role on user-assigned identity).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-validation-at-auth-boundaries">Input validation at auth boundaries<a class="headerlink" href="#input-validation-at-auth-boundaries" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attack vector</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Malformed API keys (short, control chars)</td>
+<td><code>IsPlausibleApiKey()</code> rejects before table lookup — returns 401, not 500</td>
+</tr>
+<tr>
+<td>Invalid base64 in <code>x-ms-client-principal</code></td>
+<td><code>TryDecodeClientPrincipal()</code> with safe fallback — returns 401</td>
+</tr>
+<tr>
+<td>Malformed JSON in client principal</td>
+<td><code>JsonException</code> caught, logged, returns null — 401</td>
+</tr>
+<tr>
+<td>Oversized headers</td>
+<td><code>MaxClientPrincipalHeaderLength</code> (16 KB) guard</td>
+</tr>
+<tr>
+<td>Query parameter injection (MCP routes)</td>
+<td><code>Uri.EscapeDataString()</code> on all forwarded query parameters</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rate-limiting">Rate limiting<a class="headerlink" href="#rate-limiting" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Daily request cap</strong></td>
+<td>Per-API-key, resets at midnight UTC. Enforced at <code>&gt;=</code> cap (not <code>&gt;</code>).</td>
+</tr>
+<tr>
+<td><strong>Max token cap</strong></td>
+<td>Per-event setting, limits <code>max_tokens</code> in each request.</td>
+</tr>
+<tr>
+<td><strong>Admin login throttling</strong></td>
+<td>IP-based lockout after failed login attempts.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bami-tenant-considerations">BAMI tenant considerations<a class="headerlink" href="#bami-tenant-considerations" title="Permanent link">¶</a></h2>
+<p>When deployed in a BAMI (Business Account Managed Identity) tenant:</p>
+<ol>
+<li><strong>Entra ID app registration</strong> — The admin UI registers an app in the tenant for OpenID Connect authentication. Users authenticate with their organizational credentials.</li>
+<li><strong>Conditional Access</strong> — Entra ID Conditional Access policies in the BAMI tenant apply to admin logins (MFA, device compliance, location restrictions).</li>
+<li><strong>RBAC inheritance</strong> — All role assignments are scoped to the resource group, not the subscription. No subscription-level permissions are granted.</li>
+<li><strong>No cross-tenant access</strong> — Storage and AI Services are accessed exclusively via managed identities in the same tenant. No cross-tenant federation is configured.</li>
+<li><strong>Audit trail</strong> — All Entra ID authentications and RBAC operations are logged in the tenant's Entra ID sign-in and audit logs. Application-level metrics flow to Application Insights.</li>
+</ol>
+<h2 id="secrets-inventory">Secrets inventory<a class="headerlink" href="#secrets-inventory" title="Permanent link">¶</a></h2>
+<table>
+<thead>
+<tr>
+<th>Secret</th>
+<th>Where stored</th>
+<th>Rotation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Encryption key</td>
+<td>Container Apps secret (derived from <code>uniqueString</code>)</td>
+<td>Redeployed with <code>azd up</code></td>
+</tr>
+<tr>
+<td>App Insights connection string</td>
+<td>Container Apps secret</td>
+<td>Managed by Azure</td>
+</tr>
+<tr>
+<td>Entra ID client credentials</td>
+<td>Entra ID app registration</td>
+<td>Managed by Entra ID</td>
+</tr>
+<tr>
+<td>Attendee API keys</td>
+<td>Table Storage (GUID per attendee)</td>
+<td>Per-event, time-bound by event window</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">No long-lived secrets</p>
+<p>Storage connection strings are <strong>not used</strong>. The <code>allowSharedKeyAccess: false</code> setting ensures no key-based access exists. All service-to-service auth uses short-lived managed identity tokens.</p>
+</div>
+</article>
+</div>
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+</div>
+</main>
+<footer class="md-footer">
+<nav aria-label="Footer" class="md-footer__inner md-grid">
+<a aria-label="Previous: Developers" class="md-footer__link md-footer__link--prev" href="../developers/">
+<div class="md-footer__button md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+</div>
+<div class="md-footer__title">
+<span class="md-footer__direction">
+                Previous
+              </span>
+<div class="md-ellipsis">
+                Developers
+              </div>
+</div>
+</a>
+<a aria-label="Next: Workshops" class="md-footer__link md-footer__link--next" href="../workshops/">
+<div class="md-footer__title">
+<span class="md-footer__direction">
+                Next
+              </span>
+<div class="md-ellipsis">
+                Workshops
+              </div>
+</div>
+<div class="md-footer__button md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"></path></svg>
+</div>
+</a>
+</nav>
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+      Material for MkDocs
+    </a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.footer", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+<script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script><script type="module">import mermaid from "https://unpkg.com/mermaid@11.4.1/dist/mermaid.esm.min.mjs";
+mermaid.initialize({
+    theme: "base",
+    flowchart: {
+        wrappingWidth: 120
+    },
+    themeVariables: {
+        primaryColor: "#e7f1fa",
+        primaryBorderColor: "#2b6cb0",
+        primaryTextColor: "#1a202c",
+        lineColor: "#2b6cb0",
+        secondaryColor: "#f7fafc",
+        tertiaryColor: "#edf2f7",
+        clusterBorder: "#2b6cb0",
+        clusterBkg: "#f7fafc"
+    }
+});</script></body></html>

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<link href="../mcp-servers/" rel="prev"/>
+<link href="../managed_identity/" rel="next"/>
+<link href="../../media/favicon.png" rel="icon"/>
+<meta content="mkdocs-1.6.1, mkdocs-material-9.7.6" name="generator"/>
+<title>Azure AI Search - Azure AI Proxy</title>
+<link href="../../assets/stylesheets/main.484c7ddc.min.css" rel="stylesheet"/>
+<link href="../../assets/stylesheets/palette.ab4e12ef.min.css" rel="stylesheet"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
+<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+<link href="../../css/custom.css" rel="stylesheet"/>
+<script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+<link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><script src="../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+<body data-md-color-accent="pink" data-md-color-primary="black" data-md-color-scheme="default" dir="ltr">
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header md-header--shadow" data-md-component="header">
+<nav aria-label="Header" class="md-header__inner md-grid">
+<a aria-label="Azure AI Proxy" class="md-header__button md-logo" data-md-component="logo" href="../.." title="Azure AI Proxy">
+<img alt="logo" src="../../media/favicon.png"/>
+</a>
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+</label>
+<div class="md-header__title" data-md-component="header-title">
+<div class="md-header__ellipsis">
+<div class="md-header__topic">
+<span class="md-ellipsis">
+            Azure AI Proxy
+          </span>
+</div>
+<div class="md-header__topic" data-md-component="header-topic">
+<span class="md-ellipsis">
+            
+              Azure AI Search
+            
+          </span>
+</div>
+</div>
+</div>
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="pink" data-md-color-media="" data-md-color-primary="black" data-md-color-scheme="default" id="__palette_0" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to dark mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 2c-1.82 0-3.53.5-5 1.35C8 5.08 10 8.3 10 12s-2 6.92-5 8.65C6.47 21.5 8.18 22 10 22a10 10 0 0 0 10-10A10 10 0 0 0 10 2"></path></svg>
+</label>
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="cyan" data-md-color-media="" data-md-color-primary="amber" data-md-color-scheme="slate" id="__palette_1" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_0" hidden="" title="Switch to light mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+</label>
+</form>
+<script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="Azure AI Proxy" class="md-nav__button md-logo" data-md-component="logo" href="../.." title="Azure AI Proxy">
+<img alt="logo" src="../../media/favicon.png"/>
+</a>
+    Azure AI Proxy
+  </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../..">
+<span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+<span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="true" aria-labelledby="__nav_2_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_2">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Deployment
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../azure/">
+<span class="md-ellipsis">
+    
+  
+    Deploy to Azure
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../mcp-servers/">
+<span class="md-ellipsis">
+    
+  
+    MCP Servers
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<a class="md-nav__link md-nav__link--active" href="./">
+<span class="md-ellipsis">
+    
+  
+    Azure AI Search
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../managed_identity/">
+<span class="md-ellipsis">
+    
+  
+    Managed Identity
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../lan/">
+<span class="md-ellipsis">
+    
+  
+    Docker Deployment
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../resources/">
+<span class="md-ellipsis">
+    
+  
+    Resources
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../events/">
+<span class="md-ellipsis">
+    
+  
+    Events
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../attendee/">
+<span class="md-ellipsis">
+    
+  
+    Attendees
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../reporting/">
+<span class="md-ellipsis">
+    
+  
+    Reporting
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../capacity/">
+<span class="md-ellipsis">
+    
+  
+    Capacity
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../foundry_toolkit/">
+<span class="md-ellipsis">
+    
+  
+    Foundry Toolkit
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../developers/">
+<span class="md-ellipsis">
+    
+  
+    Developers
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../security_architecture/">
+<span class="md-ellipsis">
+    
+  
+    Security Architecture
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../workshops/">
+<span class="md-ellipsis">
+    
+  
+    Workshops
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../faq/">
+<span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<h1 id="azure-ai-search">Azure AI Search<a class="headerlink" href="#azure-ai-search" title="Permanent link">¶</a></h1>
+<p>The Azure AI Proxy provides pass-through access to <a href="https://learn.microsoft.com/azure/search/search-what-is-azure-search">Azure AI Search</a> indexes. This lets workshop attendees query search indexes behind the same API-key authentication used for all other proxy endpoints, without revealing backend service URLs or admin keys.</p>
+<h2 id="how-it-works">How It Works<a class="headerlink" href="#how-it-works" title="Permanent link">¶</a></h2>
+<div class="mermaid">flowchart LR
+    Client["Search Client<br/>(Python SDK, REST)"]
+    Proxy["Azure AI Proxy<br/>authenticates &amp; forwards"]
+    Search["Azure AI Search<br/>Service"]
+
+    Client -- "api-key (attendee key)<br/>POST /api/v1/indexes/{index}/docs/search" --&gt; Proxy
+    Proxy -- "api-key (query key) or<br/>Bearer token (managed identity)" --&gt; Search
+    Search -- "search results" --&gt; Proxy
+    Proxy -- "search results" --&gt; Client
+</div>
+<ol>
+<li><strong>Client</strong> sends a search request to <code>https://&lt;proxy-host&gt;/api/v1/indexes/{indexName}/docs/search</code> with an <code>api-key</code> header containing the attendee's proxy API key.</li>
+<li><strong>Proxy</strong> validates the attendee API key, looks up the search catalog entry for the event, and forwards the request to the registered Azure AI Search service.</li>
+<li><strong>Azure AI Search</strong> receives the request authenticated with either the backend query API key (<code>api-key</code> header) or a managed identity Bearer token.</li>
+<li><strong>Proxy</strong> returns the search results unchanged to the client.</li>
+</ol>
+<h3 id="supported-url-patterns">Supported URL patterns<a class="headerlink" href="#supported-url-patterns" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>POST /api/v1/indexes/{indexName}/docs/search</code></td>
+<td>Standard REST search query</td>
+</tr>
+<tr>
+<td><code>POST /api/v1/indexes('{indexName}')/docs/search.post.search</code></td>
+<td>OData-style POST search</td>
+</tr>
+</tbody>
+</table>
+<h3 id="authentication">Authentication<a class="headerlink" href="#authentication" title="Permanent link">¶</a></h3>
+<p>The proxy supports two backend authentication modes for Azure AI Search:</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Header sent to Search service</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>API Key</strong> (default)</td>
+<td><code>api-key: &lt;query-api-key&gt;</code></td>
+</tr>
+<tr>
+<td><strong>Managed Identity</strong></td>
+<td><code>Authorization: Bearer &lt;token&gt;</code> (scope: <code>https://cognitiveservices.azure.com/.default</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>The proxy <strong>never</strong> forwards the client's attendee API key to the backend. It replaces it with the catalog's endpoint key or a managed identity token.</p>
+<h2 id="step-1-create-an-azure-ai-search-query-key">Step 1: Create an Azure AI Search Query Key<a class="headerlink" href="#step-1-create-an-azure-ai-search-query-key" title="Permanent link">¶</a></h2>
+<p>For security, use a <strong>read-only Query API Key</strong> rather than an Admin key. A query key allows search queries but cannot modify indexes or data.</p>
+<ol>
+<li>In the <a href="https://portal.azure.com">Azure portal</a>, navigate to your Azure AI Search service.</li>
+<li>Go to <strong>Settings</strong> → <strong>Keys</strong>.</li>
+<li>Copy an existing <strong>Query key</strong>, or create a new one.</li>
+</ol>
+<p><a class="glightbox" data-desc-position="bottom" data-height="auto" data-type="image" data-width="auto" href="../../media/ai-search-query-key.png"><img alt="Azure AI Search Query Key" src="../../media/ai-search-query-key.png"/></a></p>
+<h2 id="step-2-register-the-search-service-in-the-proxy-admin-ui">Step 2: Register the Search Service in the Proxy Admin UI<a class="headerlink" href="#step-2-register-the-search-service-in-the-proxy-admin-ui" title="Permanent link">¶</a></h2>
+<ol>
+<li>Log in to the proxy admin UI.</li>
+<li>Go to <strong>Resources</strong> → <strong>+ New Resource</strong>.</li>
+<li>
+<p>Fill in the fields:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Friendly Name</strong></td>
+<td>A human-readable label</td>
+<td><code>Product Search Index</code></td>
+</tr>
+<tr>
+<td><strong>Deployment Name</strong></td>
+<td>The Azure Search <strong>index name</strong></td>
+<td><code>contoso-products</code></td>
+</tr>
+<tr>
+<td><strong>Type</strong></td>
+<td>Select <strong>Azure AI Search</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Endpoint URL</strong></td>
+<td>The Search service endpoint</td>
+<td><code>https://mysearch.search.windows.net</code></td>
+</tr>
+<tr>
+<td><strong>Key</strong></td>
+<td>The read-only Query API key</td>
+<td>The query key from Step 1</td>
+</tr>
+<tr>
+<td><strong>Use Managed Identity</strong></td>
+<td>Toggle on for token-based auth</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Region</strong></td>
+<td>Any label</td>
+<td><code>eastus</code></td>
+</tr>
+<tr>
+<td><strong>Active</strong></td>
+<td>Checked</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>Link the catalog to an event</strong>: Edit the event and add the new Azure AI Search catalog so attendees can access it.</p>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <strong>Deployment Name</strong> must match the Azure Search <strong>index name</strong> exactly. This is what clients use in the URL path: <code>/api/v1/indexes/{indexName}/docs/search</code>.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If using <strong>Managed Identity</strong>, you can leave the <strong>Key</strong> field empty. The proxy will authenticate with a Bearer token instead. See the <a href="../managed_identity/">Managed Identity guide</a> for RBAC setup.</p>
+</div>
+<h2 id="step-3-query-from-a-client">Step 3: Query from a Client<a class="headerlink" href="#step-3-query-from-a-client" title="Permanent link">¶</a></h2>
+<h3 id="python-sdk">Python SDK<a class="headerlink" href="#python-sdk" title="Permanent link">¶</a></h3>
+<p>Use the standard Azure AI Search Python SDK — just point the endpoint at the proxy and use the attendee API key as the credential:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">azure.search.documents</span><span class="w"> </span><span class="kn">import</span> <span class="n">SearchClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">azure.core.credentials</span><span class="w"> </span><span class="kn">import</span> <span class="n">AzureKeyCredential</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">azure.search.documents.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">VectorizedQuery</span>
+
+<span class="n">PROXY_ENDPOINT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"PROXY_ENDPOINT"</span><span class="p">]</span>  <span class="c1"># e.g. https://&lt;proxy-host&gt;/api/v1</span>
+<span class="n">API_KEY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"PROXY_API_KEY"</span><span class="p">]</span>           <span class="c1"># attendee API key</span>
+<span class="n">INDEX_NAME</span> <span class="o">=</span> <span class="s2">"contoso-products"</span>                 <span class="c1"># matches the Deployment Name in the catalog</span>
+
+<span class="n">search_client</span> <span class="o">=</span> <span class="n">SearchClient</span><span class="p">(</span>
+    <span class="n">endpoint</span><span class="o">=</span><span class="n">PROXY_ENDPOINT</span><span class="p">,</span>
+    <span class="n">index_name</span><span class="o">=</span><span class="n">INDEX_NAME</span><span class="p">,</span>
+    <span class="n">credential</span><span class="o">=</span><span class="n">AzureKeyCredential</span><span class="p">(</span><span class="n">API_KEY</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="c1"># Keyword + vector hybrid search with semantic ranking</span>
+<span class="n">vector_query</span> <span class="o">=</span> <span class="n">VectorizedQuery</span><span class="p">(</span>
+    <span class="n">vector</span><span class="o">=</span><span class="n">embedding</span><span class="p">,</span>  <span class="c1"># your embedding vector</span>
+    <span class="n">k_nearest_neighbors</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">fields</span><span class="o">=</span><span class="s2">"contentVector"</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="n">search_client</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+    <span class="n">search_text</span><span class="o">=</span><span class="s2">"wireless headphones"</span><span class="p">,</span>
+    <span class="n">vector_queries</span><span class="o">=</span><span class="p">[</span><span class="n">vector_query</span><span class="p">],</span>
+    <span class="n">query_type</span><span class="o">=</span><span class="s2">"semantic"</span><span class="p">,</span>
+    <span class="n">semantic_configuration_name</span><span class="o">=</span><span class="s2">"default"</span><span class="p">,</span>
+    <span class="n">top</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">doc</span><span class="p">[</span><span class="s1">'title'</span><span class="p">]</span><span class="si">}</span><span class="s2"> (score: </span><span class="si">{</span><span class="n">doc</span><span class="p">[</span><span class="s1">'@search.score'</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="curl">curl<a class="headerlink" href="#curl" title="Permanent link">¶</a></h3>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">"https://&lt;proxy-host&gt;/api/v1/indexes/contoso-products/docs/search"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">"api-key: &lt;your-attendee-api-key&gt;"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{</span>
+<span class="s1">    "search": "wireless headphones",</span>
+<span class="s1">    "top": 5,</span>
+<span class="s1">    "select": "id, title, content"</span>
+<span class="s1">  }'</span>
+</code></pre></div>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">¶</a></h2>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>Check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>401 Unauthorized</code> from proxy</td>
+<td>Verify your <code>api-key</code> header matches a valid, active attendee key for an active event</td>
+</tr>
+<tr>
+<td><code>404 Not Found</code> from proxy</td>
+<td>Verify the index name in the URL matches the <strong>Deployment Name</strong> in the catalog, and the catalog is linked to your event</td>
+</tr>
+<tr>
+<td><code>403 Forbidden</code> from Search</td>
+<td>The catalog's <strong>Key</strong> doesn't have query permissions, or managed identity RBAC is not configured</td>
+</tr>
+<tr>
+<td><code>400 Bad Request</code> from Search</td>
+<td>Check the request body matches the <a href="https://learn.microsoft.com/azure/search/search-get-started-rest#search-an-index">Azure AI Search REST API</a> format</td>
+</tr>
+<tr>
+<td>Empty results</td>
+<td>Verify the index name, field names, and semantic configuration match your search service</td>
+</tr>
+</tbody>
+</table>
+</article>
+</div>
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+</div>
+</main>
+<footer class="md-footer">
+<nav aria-label="Footer" class="md-footer__inner md-grid">
+<a aria-label="Previous: MCP Servers" class="md-footer__link md-footer__link--prev" href="../mcp-servers/">
+<div class="md-footer__button md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+</div>
+<div class="md-footer__title">
+<span class="md-footer__direction">
+                Previous
+              </span>
+<div class="md-ellipsis">
+                MCP Servers
+              </div>
+</div>
+</a>
+<a aria-label="Next: Managed Identity" class="md-footer__link md-footer__link--next" href="../managed_identity/">
+<div class="md-footer__title">
+<span class="md-footer__direction">
+                Next
+              </span>
+<div class="md-ellipsis">
+                Managed Identity
+              </div>
+</div>
+<div class="md-footer__button md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"></path></svg>
+</div>
+</a>
+</nav>
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+      Material for MkDocs
+    </a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.footer", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+<script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script><script type="module">import mermaid from "https://unpkg.com/mermaid@11.4.1/dist/mermaid.esm.min.mjs";
+mermaid.initialize({
+    theme: "base",
+    flowchart: {
+        wrappingWidth: 120
+    },
+    themeVariables: {
+        primaryColor: "#e7f1fa",
+        primaryBorderColor: "#2b6cb0",
+        primaryTextColor: "#1a202c",
+        lineColor: "#2b6cb0",
+        secondaryColor: "#f7fafc",
+        tertiaryColor: "#edf2f7",
+        clusterBorder: "#2b6cb0",
+        clusterBkg: "#f7fafc"
+    }
+});</script></body></html>

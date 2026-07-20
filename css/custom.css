@@ -1,0 +1,8 @@
+.md-content img {
+    box-shadow: 2px 2px 6px 0px rgba(0,0,0,0.1);
+}
+
+.mermaid .nodeLabel,
+.mermaid .cluster-label .nodeLabel {
+    font-weight: bold !important;
+}
