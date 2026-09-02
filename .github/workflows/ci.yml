@@ -6,8 +6,11 @@ on:
       - main
     paths:
       - 'docs/**'
+  workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 jobs:
   deploy:
     env:
@@ -16,10 +19,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
-      - name: Configure Git Credentials
-        run: |
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: 3.x
@@ -31,4 +30,9 @@ jobs:
           restore-keys: |
             mkdocs-material-
       - run: pip install -r docs/requirements.txt
-      - run: mkdocs gh-deploy --force --config-file docs/mkdocs.yml
+      - run: mkdocs build --strict --config-file docs/mkdocs.yml --site-dir site
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4
