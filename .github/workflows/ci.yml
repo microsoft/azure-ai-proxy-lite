@@ -30,9 +30,9 @@ jobs:
           restore-keys: |
             mkdocs-material-
       - run: pip install -r docs/requirements.txt
-      - run: mkdocs build --strict --config-file docs/mkdocs.yml --site-dir site
+      - run: mkdocs build --strict --config-file docs/mkdocs.yml --site-dir docs\site
       - uses: actions/upload-pages-artifact@v4
         with:
-          path: site
+          path: docs\site
       - id: deployment
         uses: actions/deploy-pages@v4
