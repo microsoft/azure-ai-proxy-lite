@@ -97,7 +97,8 @@ public class MetricService(ITableStorageService tableStorage) : IMetricService
             OrganizerEmail = evt.OrganizerEmail,
             MaxTokenCap = evt.MaxTokenCap,
             DailyRequestCap = evt.DailyRequestCap,
-            Active = evt.Active
+            Active = evt.Active,
+            ShowDefaultSamples = evt.ShowDefaultSamples
         };
 
         var catalogIds = string.IsNullOrEmpty(evt.CatalogIds) ? [] : evt.CatalogIds.Split(',', StringSplitOptions.RemoveEmptyEntries);

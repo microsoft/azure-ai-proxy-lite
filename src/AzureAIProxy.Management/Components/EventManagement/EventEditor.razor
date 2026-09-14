@@ -37,6 +37,9 @@
                         Immediate="true" For="@(() => Model.Description)" />
 
                     <MudSwitch @bind-Value="Model.Active" Label="Active" Color="Color.Primary" />
+
+                    <MudSwitch @bind-Value="Model.ShowDefaultSamples"
+                        Label="Show default samples on registration page" Color="Color.Primary" />
                 </div>
 
                 <div class="editor-section">

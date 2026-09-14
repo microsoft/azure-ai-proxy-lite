@@ -294,14 +294,15 @@ public class ProxyService(IHttpClientFactory httpClientFactory, IMetricService m
         foreach (var header in requestHeaders)
             requestMessage.Headers.Add(header.Key, header.Value);
 
-        var response = await httpClient.SendAsync(
+        using var response = await httpClient.SendAsync(
             requestMessage,
             HttpCompletionOption.ResponseHeadersRead
         );
         await metricService.LogApiUsageAsync(requestContext, deployment, null);
 
         context.Response.StatusCode = (int)response.StatusCode;
-        context.Response.ContentType = "application/json";
+        context.Response.ContentType = response.Content.Headers.ContentType?.ToString()
+            ?? "application/octet-stream";
 
         if ((int)response.StatusCode >= 400)
         {
@@ -312,7 +313,13 @@ public class ProxyService(IHttpClientFactory httpClientFactory, IMetricService m
         else
         {
             await using var responseStream = await response.Content.ReadAsStreamAsync();
-            await responseStream.CopyToAsync(context.Response.Body);
+            var buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = await responseStream.ReadAsync(buffer, context.RequestAborted)) > 0)
+            {
+                await context.Response.Body.WriteAsync(buffer.AsMemory(0, bytesRead), context.RequestAborted);
+                await context.Response.Body.FlushAsync(context.RequestAborted);
+            }
         }
     }
 

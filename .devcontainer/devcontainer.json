@@ -4,12 +4,14 @@
   "dockerComposeFile": "docker-compose.yml",
   "service": "devcontainer",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-
   // See https://containers.dev/implementors/features/
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {},
     "ghcr.io/azure/azure-dev/azd:latest": {},
-    "ghcr.io/devcontainers/features/node": { "version": "20" },
+    "ghcr.io/devcontainers/features/node": {
+      "version": "20",
+      "pnpmVersion": "none"
+    },
     "ghcr.io/devcontainers/features/dotnet:2": {
       "version": "10.0"
     },
@@ -18,7 +20,6 @@
     },
     "ghcr.io/devcontainers/features/azure-cli:1": {}
   },
-
   // Configure tool-specific properties.
   "customizations": {
     // Configure properties specific to VS Code.
@@ -33,19 +34,22 @@
       ]
     }
   },
-
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "bash ./.devcontainer/post-create.sh",
-
   // Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
   "remoteUser": "vscode",
-
   "remoteEnv": {
-    "ENVIRONMENT": "development"
+    "ENVIRONMENT": "development",
+    "NPM_CONFIG_REGISTRY": "https://packagefeedproxy.microsoft.io/npm/"
   },
-
-  "forwardPorts": [4280, 8000, 8001, 10000, 10001, 10002],
-
+  "forwardPorts": [
+    4280,
+    8000,
+    8001,
+    10000,
+    10001,
+    10002
+  ],
   "portsAttributes": {
     "8000": {
       "label": "Admin",

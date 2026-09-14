@@ -91,6 +91,127 @@ public class AzureOpenAIRouteTests : IClassFixture<ProxyAppFixture>
     }
 
     [SkippableFact]
+    public async Task Responses_RootOpenAIPath_ValidKeyAndFoundryModel_Returns200()
+    {
+        Skip.IfNot(_fixture.Available, "Azurite not available");
+
+        var eventId = $"evt-{Guid.NewGuid():N}";
+        var catalogId = Guid.NewGuid().ToString();
+        await _fixture.SeedEventAsync(eventId, "owner-test", catalogIds: catalogId);
+        await _fixture.SeedCatalogAsync(catalogId, "gpt-5-mini", ModelType.Foundry_Model.ToStorageString());
+        var apiKey = await _fixture.SeedAttendeeAsync("user-1", eventId);
+
+        var request = new HttpRequestMessage(HttpMethod.Post, "/openai/v1/responses");
+        request.Headers.Add("api-key", apiKey);
+        request.Content = JsonContent("{\"model\":\"gpt-5-mini\",\"input\":\"hi\"}");
+
+        var response = await _fixture.Client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [SkippableFact]
+    public async Task Responses_RootOpenAIPath_BearerTokenAndFoundryModel_Returns200()
+    {
+        Skip.IfNot(_fixture.Available, "Azurite not available");
+
+        var eventId = $"evt-{Guid.NewGuid():N}";
+        var catalogId = Guid.NewGuid().ToString();
+        await _fixture.SeedEventAsync(eventId, "owner-test", catalogIds: catalogId);
+        await _fixture.SeedCatalogAsync(catalogId, "gpt-5-mini", ModelType.Foundry_Model.ToStorageString());
+        var apiKey = await _fixture.SeedAttendeeAsync("user-1", eventId);
+
+        var request = new HttpRequestMessage(HttpMethod.Post, "/openai/v1/responses");
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+        request.Content = JsonContent("{\"model\":\"gpt-5-mini\",\"input\":\"hi\"}");
+
+        var response = await _fixture.Client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [SkippableFact]
+    public async Task Responses_CompleteUpstreamEndpoint_DoesNotDuplicateRequestPath()
+    {
+        Skip.IfNot(_fixture.Available, "Azurite not available");
+
+        var eventId = $"evt-{Guid.NewGuid():N}";
+        var catalogId = Guid.NewGuid().ToString();
+        const string upstreamEndpoint = "https://fake-endpoint.example.com/openai/v1/responses";
+        await _fixture.SeedEventAsync(eventId, "owner-test", catalogIds: catalogId);
+        await _fixture.SeedCatalogAsync(
+            catalogId,
+            "foundry-agent",
+            ModelType.Foundry_Agent.ToStorageString(),
+            endpointUrl: upstreamEndpoint);
+        var apiKey = await _fixture.SeedAttendeeAsync("user-1", eventId);
+
+        var request = new HttpRequestMessage(HttpMethod.Post, "/openai/v1/responses");
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+        request.Content = JsonContent("{\"model\":\"foundry-agent\",\"input\":\"hi\"}");
+
+        var response = await _fixture.Client.SendAsync(request);
+        var body = await response.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains(upstreamEndpoint, body);
+        Assert.DoesNotContain("/openai/v1/responses/openai/v1/responses", body);
+    }
+
+    [SkippableFact]
+    public async Task Embeddings_RootOpenAIPath_BearerTokenAndFoundryModel_Returns200()
+    {
+        Skip.IfNot(_fixture.Available, "Azurite not available");
+
+        var eventId = $"evt-{Guid.NewGuid():N}";
+        var catalogId = Guid.NewGuid().ToString();
+        await _fixture.SeedEventAsync(eventId, "owner-test", catalogIds: catalogId);
+        await _fixture.SeedCatalogAsync(catalogId, "text-embedding-3-small", ModelType.Foundry_Model.ToStorageString());
+        var apiKey = await _fixture.SeedAttendeeAsync("user-1", eventId);
+
+        var request = new HttpRequestMessage(HttpMethod.Post, "/openai/v1/embeddings");
+        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+        request.Content = JsonContent("{\"model\":\"text-embedding-3-small\",\"input\":\"hello\"}");
+
+        var response = await _fixture.Client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [SkippableFact]
+    public async Task Responses_CanonicalApiPath_IgnoresRequestModelAndUsesFoundryAgent()
+    {
+        Skip.IfNot(_fixture.Available, "Azurite not available");
+
+        var eventId = $"evt-{Guid.NewGuid():N}";
+        var agentCatalogId = Guid.NewGuid().ToString();
+        var modelCatalogId = Guid.NewGuid().ToString();
+        await _fixture.SeedEventAsync(eventId, "owner-test", catalogIds: $"{agentCatalogId},{modelCatalogId}");
+        await _fixture.SeedCatalogAsync(
+            agentCatalogId,
+            "foundry-agent",
+            ModelType.Foundry_Agent.ToStorageString(),
+            endpointUrl: "https://foundry-agent.example.com");
+        await _fixture.SeedCatalogAsync(
+            modelCatalogId,
+            "gpt-5-mini",
+            ModelType.Foundry_Model.ToStorageString(),
+            endpointUrl: "https://gpt-5-mini.example.com");
+        var apiKey = await _fixture.SeedAttendeeAsync("user-1", eventId);
+
+        var request = new HttpRequestMessage(HttpMethod.Post, "/api/v1/openai/v1/responses");
+        request.Headers.Add("api-key", apiKey);
+        request.Content = JsonContent("{\"model\":\"gpt-5-mini\",\"input\":\"hi\"}");
+
+        var response = await _fixture.Client.SendAsync(request);
+        var body = await response.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("foundry-agent.example.com", body);
+        Assert.DoesNotContain("gpt-5-mini.example.com", body);
+    }
+
+    [SkippableFact]
     public async Task ChatCompletions_BearerToken_Returns200()
     {
         Skip.IfNot(_fixture.Available, "Azurite not available");

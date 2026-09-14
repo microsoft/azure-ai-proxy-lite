@@ -306,6 +306,9 @@ export const Registration = () => {
       );
   })();
   const hasNonFoundryModels = nonFoundryModelNames.length > 0;
+  const defaultChatModel = nonFoundryModelNames.find(
+    (modelName) => !modelName.toLowerCase().includes("embedding")
+  ) ?? nonFoundryModelNames[0] ?? "<MODEL_NAME>";
 
   const eventStatus: "not-started" | "active" | "ended" | "unknown" = (() => {
     if (!event?.startTimestamp || !event?.endTimestamp) return "unknown";
@@ -499,10 +502,12 @@ export const Registration = () => {
                   />
                 </div>
               ))}
-              <p className={styles.toolkitDescription}>
-                Python example using the MCP client library (attach your Event API Key in headers):
-              </p>
-              <div className={styles.codeCardWrapper}>
+              {event.showDefaultSamples !== false && (
+                <>
+                  <p className={styles.toolkitDescription}>
+                    Python example using the MCP client library (attach your Event API Key in headers):
+                  </p>
+                  <div className={styles.codeCardWrapper}>
                 <div className={styles.codeCardCopyButton}>
                   <Button
                     icon={<CopyRegular />}
@@ -544,7 +549,9 @@ if __name__ == "__main__":
                     </code>
                   </pre>
                 </div>
-              </div>
+                  </div>
+                </>
+              )}
             </>
           )}
           </div>
@@ -607,6 +614,8 @@ if __name__ == "__main__":
             </div>
           )}
           </div>
+          {event.showDefaultSamples !== false && (
+          <>
           <h4>Python example using the OpenAI Python SDK</h4>
           The following Python code demonstrates how to use the OpenAI Python SDK to interact with the Azure OpenAI Service.
           <div className={styles.codeCardWrapper}>
@@ -656,6 +665,128 @@ print(completion.model_dump_json(indent=2))`}
           </pre>
           </div>
           </div>
+          <h4>.NET OpenAIClient configuration</h4>
+          <p className={styles.toolkitDescription}>
+            The default .NET AI Web Chat template can use the event key and proxy endpoint directly.
+          </p>
+          <div className={styles.codeCardWrapper}>
+            <div className={styles.codeCardCopyButton}>
+              <Button
+                icon={<CopyRegular />}
+                onClick={() => copyToClipboard(`{
+  "AzureOpenAI:Key": "${attendee.apiKey}",
+  "AzureOpenAI:Endpoint": "${event?.proxyUrl ?? `${window.location.origin}/api/v1`}"
+}`)}
+                size="small"
+              />
+            </div>
+            <div className={styles.codeCard}>
+              <pre style={{ margin: 0 }}><code>{`{
+  "AzureOpenAI:Key": "<YOUR_EVENT_API_KEY>",
+  "AzureOpenAI:Endpoint": "${event?.proxyUrl ?? `${window.location.origin}/api/v1`}"
+}`}</code></pre>
+            </div>
+          </div>
+          <h4>.NET console example using Microsoft.Extensions.AI</h4>
+          <p className={styles.toolkitDescription}>
+            Create a console app, add <code>Microsoft.Extensions.AI.OpenAI</code> and <code>Azure.AI.OpenAI</code>, then run this Azure OpenAI chat request through the proxy.
+          </p>
+          <p className={styles.toolkitDescription}>
+            Never hardcode API keys. Store them in user secrets, environment variables, or another secure configuration provider. See the{" "}
+            <Link
+              href="https://learn.microsoft.com/dotnet/ai/quickstarts/prompt-model?pivots=azure-openai"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              .NET AI quickstart
+            </Link>{" "}
+            for the recommended pattern.
+          </p>
+          <h5>Set environment variables</h5>
+          <div className={styles.codeCardWrapper}>
+            <div className={styles.codeCardCopyButton}>
+              <Button
+                icon={<CopyRegular />}
+                onClick={() => copyToClipboard(`$env:AzureOpenAI__Endpoint = "${event?.proxyUrl ?? `${window.location.origin}/api/v1`}"
+$env:AzureOpenAI__Key = "${attendee.apiKey}"`)}
+                size="small"
+              />
+            </div>
+            <div className={styles.codeCard}>
+              <pre style={{ margin: 0 }}><code>{`# PowerShell
+$env:AzureOpenAI__Endpoint = "${event?.proxyUrl ?? `${window.location.origin}/api/v1`}"
+$env:AzureOpenAI__Key = "<YOUR_EVENT_API_KEY>"`}</code></pre>
+            </div>
+          </div>
+          <div className={styles.codeCardWrapper}>
+            <div className={styles.codeCardCopyButton}>
+              <Button
+                icon={<CopyRegular />}
+                onClick={() => copyToClipboard(`export AzureOpenAI__Endpoint="${event?.proxyUrl ?? `${window.location.origin}/api/v1`}"
+export AzureOpenAI__Key="${attendee.apiKey}"`)}
+                size="small"
+              />
+            </div>
+            <div className={styles.codeCard}>
+              <pre style={{ margin: 0 }}><code>{`# macOS / Linux
+export AzureOpenAI__Endpoint="${event?.proxyUrl ?? `${window.location.origin}/api/v1`}"
+export AzureOpenAI__Key="<YOUR_EVENT_API_KEY>"`}</code></pre>
+            </div>
+          </div>
+          <div className={styles.codeCardWrapper}>
+            <div className={styles.codeCardCopyButton}>
+              <Button
+                icon={<CopyRegular />}
+                onClick={() => copyToClipboard(`// dotnet add package Azure.AI.OpenAI
+// dotnet add package Microsoft.Extensions.AI.OpenAI
+
+using System.ClientModel;
+using Azure.AI.OpenAI;
+using Microsoft.Extensions.AI;
+
+const string endpoint = Environment.GetEnvironmentVariable("AzureOpenAI__Endpoint")
+    ?? throw new InvalidOperationException("Set AzureOpenAI__Endpoint.");
+const string apiKey = Environment.GetEnvironmentVariable("AzureOpenAI__Key")
+    ?? throw new InvalidOperationException("Set AzureOpenAI__Key.");
+const string model = "${defaultChatModel}";
+
+var azureOpenAIClient = new AzureOpenAIClient(
+    new Uri(endpoint),
+    new ApiKeyCredential(apiKey));
+
+IChatClient chatClient = azureOpenAIClient.GetChatClient(model).AsIChatClient();
+ChatResponse response = await chatClient.GetResponseAsync(
+    "In one sentence, explain what an AI proxy does.");
+
+Console.WriteLine(response.Text);`)}
+                size="small"
+              />
+            </div>
+            <div className={styles.codeCard}>
+              <pre style={{ margin: 0 }}><code>{`// dotnet add package Azure.AI.OpenAI
+      // dotnet add package Microsoft.Extensions.AI.OpenAI
+
+using System.ClientModel;
+      using Azure.AI.OpenAI;
+using Microsoft.Extensions.AI;
+
+      const string endpoint = Environment.GetEnvironmentVariable("AzureOpenAI__Endpoint")
+        ?? throw new InvalidOperationException("Set AzureOpenAI__Endpoint.");
+      const string apiKey = Environment.GetEnvironmentVariable("AzureOpenAI__Key")
+        ?? throw new InvalidOperationException("Set AzureOpenAI__Key.");
+const string model = "${defaultChatModel}";
+
+      var azureOpenAIClient = new AzureOpenAIClient(
+        new Uri(endpoint),
+        new ApiKeyCredential(apiKey));
+
+      IChatClient chatClient = azureOpenAIClient.GetChatClient(model).AsIChatClient();
+ChatResponse response = await chatClient.GetResponseAsync(
+    "In one sentence, explain what an AI proxy does.");
+
+Console.WriteLine(response.Text);`}</code></pre>
+            </div>
+          </div>
           <h3 style={{ "marginBottom": "10px" }}>More examples</h3>
           <ul>
             <li>
@@ -677,6 +808,8 @@ print(completion.model_dump_json(indent=2))`}
               </Link>
             </li>
           </ul>
+          </>
+          )}
           </>
           )}
           <br />

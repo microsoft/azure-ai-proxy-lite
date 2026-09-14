@@ -54,6 +54,20 @@ public class MiddlewareSecurityTests
     }
 
     [Fact]
+    public async Task LoadProperties_RootOpenAIPath_SetsRequestPathWithoutLeadingSlash()
+    {
+        var middleware = new LoadProperties(_ => Task.CompletedTask);
+        var context = new DefaultHttpContext();
+        context.Request.Path = "/openai/v1/responses";
+        context.Request.ContentType = "application/json";
+        context.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes("{}"));
+
+        await middleware.InvokeAsync(context);
+
+        Assert.Equal("openai/v1/responses", context.Items["requestPath"]);
+    }
+
+    [Fact]
     public async Task MaxTokensHandler_MaxTokensAboveCap_ReturnsBadRequest()
     {
         var nextCalled = false;

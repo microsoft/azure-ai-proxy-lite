@@ -39,6 +39,7 @@ public class EventService(IAuthService authService, ITableStorageService tableSt
             MaxTokenCap = model.MaxTokenCap,
             DailyRequestCap = model.DailyRequestCap,
             Active = model.Active,
+            ShowDefaultSamples = model.ShowDefaultSamples,
             CatalogIds = ""
         };
 
@@ -201,6 +202,7 @@ public class EventService(IAuthService authService, ITableStorageService tableSt
         evt.OrganizerEmail = model.OrganizerEmail!;
         evt.OrganizerName = model.OrganizerName!;
         evt.Active = model.Active;
+        evt.ShowDefaultSamples = model.ShowDefaultSamples;
         evt.MaxTokenCap = model.MaxTokenCap;
         evt.DailyRequestCap = model.DailyRequestCap;
         evt.TimeZoneLabel = model.SelectedTimeZone!.Id;
@@ -294,6 +296,7 @@ public class EventService(IAuthService authService, ITableStorageService tableSt
         OrganizerEmail = entity.OrganizerEmail,
         MaxTokenCap = entity.MaxTokenCap,
         DailyRequestCap = entity.DailyRequestCap,
-        Active = entity.Active
+        Active = entity.Active,
+        ShowDefaultSamples = entity.ShowDefaultSamples
     };
 }

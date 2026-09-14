@@ -39,6 +39,7 @@ public class EventEditorModel
     public int DailyRequestCap { get; set; } = 1024;
 
     public bool Active { get; set; }
+    public bool ShowDefaultSamples { get; set; } = true;
 
     [Required(ErrorMessage = "Time zone is required")]
     public TimeZoneInfo? SelectedTimeZone { get; set; }

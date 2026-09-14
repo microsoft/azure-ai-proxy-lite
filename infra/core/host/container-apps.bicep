@@ -1,4 +1,3 @@
-param name string
 param location string = resourceGroup().location
 param tags object = {}
 
@@ -8,7 +7,7 @@ param logAnalyticsWorkspaceName string
 param applicationInsightsName string = ''
 
 module containerAppsEnvironment 'container-apps-environment.bicep' = {
-  name: '${name}-container-apps-environment'
+  name: 'environment'
   params: {
     name: containerAppsEnvironmentName
     location: location
@@ -19,7 +18,7 @@ module containerAppsEnvironment 'container-apps-environment.bicep' = {
 }
 
 module containerRegistry 'container-registry.bicep' = {
-  name: '${name}-container-registry'
+  name: 'registry'
   params: {
     name: containerRegistryName
     location: location

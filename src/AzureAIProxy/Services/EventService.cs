@@ -38,7 +38,8 @@ public class EventService(ITableStorageService tableStorage, IMemoryCache memory
             StartTimestamp = evt.StartTimestamp,
             EndTimestamp = evt.EndTimestamp,
             TimeZoneOffset = evt.TimeZoneOffset,
-            TimeZoneLabel = evt.TimeZoneLabel
+            TimeZoneLabel = evt.TimeZoneLabel,
+            ShowDefaultSamples = evt.ShowDefaultSamples
         };
 
         memoryCache.Set(cacheKey, result, eventCache.GetCacheEntryOptions());

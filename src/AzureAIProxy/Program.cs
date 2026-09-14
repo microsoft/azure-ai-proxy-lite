@@ -76,9 +76,10 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Proxy middleware for API routes
+// Proxy middleware for API routes and the root OpenAI Responses compatibility alias.
 app.UseWhen(
-    context => context.Request.Path.StartsWithSegments("/api"),
+    context => context.Request.Path.StartsWithSegments("/api")
+        || context.Request.Path.StartsWithSegments("/openai/v1"),
     appBuilder =>
     {
         appBuilder.UseMiddleware<RateLimiterHandler>();
@@ -89,6 +90,10 @@ app.UseWhen(
 
 // Map Proxy API routes
 app.MapProxyRoutes();
+
+// The default .NET OpenAI client appends /openai/v1 to its configured endpoint.
+// Keep /api/v1 as the canonical proxy base while accepting the root path as an alias.
+app.MapGroup("").MapFoundryOpenAIRoutes();
 
 // Cache invalidation endpoint (called by admin container via internal FQDN).
 // Protected by shared secret. The endpoint only invalidates in-memory caches,

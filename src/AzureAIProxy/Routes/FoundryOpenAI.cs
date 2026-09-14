@@ -1,6 +1,8 @@
 using System.Net;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using AzureAIProxy.Middleware;
 using AzureAIProxy.Shared.Database;
 using AzureAIProxy.Routes.CustomResults;
 using AzureAIProxy.Services;
@@ -33,10 +35,13 @@ public static class FoundryOpenAI
         openAIGroup.MapPost("/responses/{responseId}/cancel", HandleRequestAsync);
         openAIGroup.MapPost("/responses/compact", HandleRequestAsync);
 
+        // OpenAI-compatible embeddings route used by OpenAIClient.GetEmbeddingClient.
+        openAIGroup.MapPost("/embeddings", HandleRequestAsync);
+
         return builder;
     }
 
-    [ApiKeyAuthorize]
+    [Authorize(AuthenticationSchemes = $"{ProxyAuthenticationOptions.ApiKeyScheme},{ProxyAuthenticationOptions.BearerTokenScheme}")]
     private static async Task<IResult> HandleRequestAsync(
         [FromServices] ICatalogService catalogService,
         [FromServices] IProxyService proxyService,
@@ -58,20 +63,35 @@ public static class FoundryOpenAI
         logger.LogInformation("Foundry OpenAI: eventId={EventId}, requestPath={RequestPath}, conversationId={ConvId}, responseId={RespId}, streaming={Streaming}",
             requestContext.EventId, requestPath, conversationId, responseId, isStreaming);
 
-        var deployment = await catalogService.GetEventFoundryAgentAsync(requestContext.EventId);
+        var modelName = context.Items["ModelName"] as string;
+        var isOpenAIClientCompatibilityPath = context.Request.Path.StartsWithSegments("/openai/v1");
+        Deployment? deployment;
+        if (!isOpenAIClientCompatibilityPath || string.IsNullOrWhiteSpace(modelName))
+        {
+            deployment = await catalogService.GetEventFoundryAgentAsync(requestContext.EventId);
+        }
+        else
+        {
+            (deployment, _) = await catalogService.GetCatalogItemAsync(requestContext.EventId, modelName);
+        }
+
         if (deployment is null)
         {
-            logger.LogWarning("Foundry OpenAI: No Foundry Agent deployment found for eventId={EventId}", requestContext.EventId);
-            return OpenAIResult.NotFound("No Foundry Agent deployment found for the event.");
+            logger.LogWarning("Foundry OpenAI: No deployment found for eventId={EventId}, model={ModelName}", requestContext.EventId, modelName);
+            return OpenAIResult.NotFound(!isOpenAIClientCompatibilityPath || string.IsNullOrWhiteSpace(modelName)
+                ? "No Foundry Agent deployment found for the event."
+                : $"Model '{modelName}' not found for the event.");
         }
         logger.LogInformation("Foundry OpenAI: Found deployment={DeploymentName}, endpoint={Endpoint}, useMI={UseMI}, modelType={ModelType}",
             deployment.DeploymentName, deployment.EndpointUrl, deployment.UseManagedIdentity, deployment.ModelType);
 
-        // requestPath will be "openai/v1/conversations/..." or "openai/v1/responses/..."
-        // Append to existing project endpoint path
-        // NOTE: /v1 in the path implies the API version, so no api-version query param
+        // requestPath will be "openai/v1/conversations/..." or "openai/v1/responses/...".
+        // Foundry project endpoints need the request path appended, while direct model
+        // endpoints can already include the complete OpenAI route.
         var url = new UriBuilder(deployment.EndpointUrl.TrimEnd('/'));
-        url.Path = url.Path.TrimEnd('/') + "/" + requestPath;
+        var normalizedRequestPath = requestPath.TrimStart('/');
+        if (!url.Path.TrimEnd('/').EndsWith($"/{normalizedRequestPath}", StringComparison.OrdinalIgnoreCase))
+            url.Path = url.Path.TrimEnd('/') + "/" + normalizedRequestPath;
         logger.LogInformation("Foundry OpenAI: Forwarding to upstream URL={Url}", url.Uri);
 
         var authHeader = await proxyService.GetAuthenticationHeaderAsync(deployment);

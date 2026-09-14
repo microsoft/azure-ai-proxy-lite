@@ -86,4 +86,38 @@ public class ProxyServiceBehaviorTests
         Assert.Equal(123, maxCompletionTokens.GetInt32());
         Assert.False(rewrittenBody.RootElement.TryGetProperty("max_tokens", out _));
     }
+
+    [Fact]
+    public async Task HttpPostStreamAsync_PreservesServerSentEventContentType()
+    {
+        var handler = new RecordingHttpMessageHandler((_, _) =>
+        {
+            var response = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("event: response.completed\ndata: {}\n\n")
+            };
+            response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/event-stream");
+            return Task.FromResult(response);
+        });
+        var service = new ProxyService(
+            new StubHttpClientFactory(new HttpClient(handler)),
+            new NoopMetricService(),
+            NullLogger<ProxyService>.Instance);
+        var context = new DefaultHttpContext();
+        context.Response.Body = new MemoryStream();
+        using var body = JsonDocument.Parse("{\"stream\":true}");
+
+        await service.HttpPostStreamAsync(
+            new UriBuilder("https://upstream.example.com/openai/v1/responses"),
+            [new RequestHeader("api-key", "proxy-key")],
+            context,
+            body,
+            TestData.CreateRequestContext(),
+            TestData.CreateDeployment(ModelType.Foundry_Model.ToStorageString()));
+
+        context.Response.Body.Position = 0;
+        using var reader = new StreamReader(context.Response.Body);
+        Assert.Equal("text/event-stream", context.Response.ContentType);
+        Assert.Equal("event: response.completed\ndata: {}\n\n", await reader.ReadToEndAsync());
+    }
 }

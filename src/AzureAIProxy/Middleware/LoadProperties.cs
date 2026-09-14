@@ -33,7 +33,11 @@ public class LoadProperties(RequestDelegate next)
                 }
             }
 
-            var requestPath = context.Request.Path.Value!.Split("/api/v1/").Last();
+            var requestPath = context.Request.Path.Value!;
+            if (requestPath.StartsWith("/api/v1/", StringComparison.OrdinalIgnoreCase))
+                requestPath = requestPath["/api/v1/".Length..];
+            else
+                requestPath = requestPath.TrimStart('/');
             context.Items["requestPath"] = requestPath;
             context.Items["jsonDoc"] = jsonDoc;
 

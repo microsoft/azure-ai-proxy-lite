@@ -28,6 +28,9 @@ public class EventRegistration
     [JsonPropertyName("time_zone_offset")]
     public int TimeZoneOffset { get; set; } = 0;
 
+    [JsonPropertyName("show_default_samples")]
+    public bool ShowDefaultSamples { get; set; } = true;
+
     [JsonPropertyName("proxy_url")]
     public string? ProxyUrl { get; set; }
 

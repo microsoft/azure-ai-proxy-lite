@@ -136,6 +136,23 @@ public class EventRouteTests : IClassFixture<ProxyAppFixture>
     }
 
     [SkippableFact]
+    public async Task EventRegistration_ReturnsDefaultSamplesPreference()
+    {
+        Skip.IfNot(_fixture.Available, "Azurite not available");
+
+        var eventId = $"evt-{Guid.NewGuid():N}";
+        await _fixture.SeedEventAsync(eventId, "owner-samples", showDefaultSamples: false);
+
+        var response = await _fixture.Client.GetAsync($"/api/v1/event/{eventId}");
+        var body = await response.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        using var doc = JsonDocument.Parse(body);
+        Assert.False(doc.RootElement.GetProperty("show_default_samples").GetBoolean());
+    }
+
+    [SkippableFact]
     public async Task EventRegistration_ReturnsMcpServerEndpoints_WhenConfigured()
     {
         Skip.IfNot(_fixture.Available, "Azurite not available");

@@ -18,6 +18,7 @@ export type EventDetails = {
   endTimestamp: Date;
   timeZoneLabel: string;
   timeZoneOffset: number;
+  showDefaultSamples?: boolean;
   organizerName: string;
   organizerEmail: string;
   proxyUrl?: string;

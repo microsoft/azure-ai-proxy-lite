@@ -13,6 +13,7 @@ public class Event
     public int MaxTokenCap { get; set; }
     public int DailyRequestCap { get; set; }
     public bool Active { get; set; }
+    public bool ShowDefaultSamples { get; set; } = true;
     public int TimeZoneOffset { get; set; }
     public string TimeZoneLabel { get; set; } = null!;
     public string? EventSharedCode { get; set; }

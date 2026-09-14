@@ -62,6 +62,7 @@ public class BackupService(ITableStorageService tableStorage, IEncryptionService
                     MaxTokenCap = entity.MaxTokenCap,
                     DailyRequestCap = entity.DailyRequestCap,
                     Active = entity.Active,
+                    ShowDefaultSamples = entity.ShowDefaultSamples,
                     CatalogIds = entity.CatalogIds
                 });
             }
@@ -226,6 +227,7 @@ public class BackupService(ITableStorageService tableStorage, IEncryptionService
                 MaxTokenCap = evt.MaxTokenCap,
                 DailyRequestCap = evt.DailyRequestCap,
                 Active = evt.Active,
+                ShowDefaultSamples = evt.ShowDefaultSamples,
                 CatalogIds = remappedCatalogIds
             });
 

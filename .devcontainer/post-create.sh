@@ -12,6 +12,10 @@ else
     echo "Not inside a Git repository, skipping pre-commit hook installation."
 fi
 
+NPM_REGISTRY="${NPM_CONFIG_REGISTRY:-https://packagefeedproxy.microsoft.io/npm/}"
+echo "Configuring npm registry to $NPM_REGISTRY..."
+npm config set registry "$NPM_REGISTRY"
+
 echo Setting up Registration environment...
 cd src/registration
 npm i

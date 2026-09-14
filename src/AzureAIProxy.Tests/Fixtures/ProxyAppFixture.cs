@@ -86,7 +86,8 @@ public class ProxyAppFixture : IAsyncLifetime
         bool active = true,
         DateTime? startTimestamp = null,
         DateTime? endTimestamp = null,
-        string? eventSharedCode = null)
+        string? eventSharedCode = null,
+        bool showDefaultSamples = true)
     {
         var eventsTable = TableStorage.GetTableClient(TableNames.Events);
         await eventsTable.UpsertEntityAsync(new EventEntity
@@ -105,6 +106,7 @@ public class ProxyAppFixture : IAsyncLifetime
             MaxTokenCap = 500,
             DailyRequestCap = dailyRequestCap,
             Active = active,
+            ShowDefaultSamples = showDefaultSamples,
             CatalogIds = catalogIds,
             EventSharedCode = eventSharedCode
         }, TableUpdateMode.Replace);

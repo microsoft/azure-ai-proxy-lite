@@ -34,6 +34,7 @@ public class BackupEvent
     public int MaxTokenCap { get; set; }
     public int DailyRequestCap { get; set; }
     public bool Active { get; set; }
+    public bool ShowDefaultSamples { get; set; } = true;
     public string CatalogIds { get; set; } = "";
 }
 

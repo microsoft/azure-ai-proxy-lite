@@ -44,6 +44,7 @@ public partial class EventEdit : ComponentBase
         Model.OrganizerEmail = evt.OrganizerEmail;
         Model.OrganizerName = evt.OrganizerName;
         Model.Active = evt.Active;
+        Model.ShowDefaultSamples = evt.ShowDefaultSamples;
         Model.MaxTokenCap = evt.MaxTokenCap;
         Model.DailyRequestCap = evt.DailyRequestCap;
         try

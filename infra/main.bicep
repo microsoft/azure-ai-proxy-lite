@@ -63,7 +63,6 @@ module containerApps 'core/host/container-apps.bicep' = {
   name: 'container-apps'
   scope: resourceGroup
   params: {
-    name: '${prefix}-app'
     location: location
     tags: tags
     containerAppsEnvironmentName: '${prefix}-cae'
@@ -77,7 +76,7 @@ module proxy 'app/proxy.bicep' = {
   name: 'proxy'
   scope: resourceGroup
   params: {
-    name: '${prefix}-proxy'
+    name: 'proxy-${resourceToken}'
     location: location
     tags: tags
     identityName: '${prefix}-id-proxy'
@@ -96,7 +95,7 @@ module admin 'app/admin.bicep' = {
   name: 'admin'
   scope: resourceGroup
   params: {
-    name: '${prefix}-admin'
+    name: 'admin-${resourceToken}'
     location: location
     tags: tags
     identityName: '${prefix}-id-admin'

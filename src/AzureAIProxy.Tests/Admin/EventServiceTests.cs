@@ -54,6 +54,7 @@ public class EventServiceTests : IAsyncLifetime
         Assert.NotEmpty(result.EventId);
         Assert.Equal("My Workshop", result.EventCode);
         Assert.Equal(OwnerId, result.OwnerId);
+        Assert.True(result.ShowDefaultSamples);
     }
 
     [SkippableFact]
@@ -111,12 +112,14 @@ public class EventServiceTests : IAsyncLifetime
         var created = await service.CreateEventAsync(CreateModel("Original"));
         var model = CreateModel("Updated");
         model.Active = false;
+        model.ShowDefaultSamples = false;
 
         var updated = await service.UpdateEventAsync(created!.EventId, model);
 
         Assert.NotNull(updated);
         Assert.Equal("Updated", updated.EventCode);
         Assert.False(updated.Active);
+        Assert.False(updated.ShowDefaultSamples);
     }
 
     [SkippableFact]
